@@ -2,13 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "../config/axios.config";
 import type { AxiosRequestConfig } from "axios";
 
-interface IGetDataQuery<T> {
+interface IGetDataQuery {
   queryKey: string[];
   url: string;
   config?: AxiosRequestConfig;
 }
 
-const useGetDataQuery = <T>({ queryKey, url, config }: IGetDataQuery<T>) => {
+const useGetDataQuery = <T>({ queryKey, url, config }: IGetDataQuery) => {
   return useQuery<T>({
     queryKey,
     queryFn: async () => {
