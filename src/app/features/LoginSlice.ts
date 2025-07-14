@@ -2,14 +2,13 @@ import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/tool
 import axiosInstance from '../../config/axios.config';
 import type { IApiError, ILoginForm, ILoginResponse } from '../../interfaces';
 import type { AxiosError } from 'axios';
+import CookiesService from "../../services/CookieServices"
 
 export interface ILoginSlice {
   loading: boolean;
   data: ILoginResponse | null;
   error: IApiError | null;
 }
-
-
 
 const initialState: ILoginSlice = {
     loading: false,
@@ -42,6 +41,15 @@ export const loginSlice = createSlice({
       .addCase(userLogin.fulfilled, (state, action: PayloadAction<ILoginResponse>) => {
         state.loading = false;
         state.data = action.payload;
+        const date = new Date();
+        const IN_DAYS = 3;
+        const EXPIERS_IN_DAYS = 1000 * 60 * 60 * 24 * IN_DAYS;
+        date.setTime(date.getTime() + EXPIERS_IN_DAYS)
+        const options = {path:"/" , expires:date}
+        CookiesService.set("userData", action.payload, options)
+        setTimeout(() => {
+        window.location.reload()
+        } , 3000)
       })
     .addCase(userLogin.rejected, (state, action) => {
         state.loading = false;

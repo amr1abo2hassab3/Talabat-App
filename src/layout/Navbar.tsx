@@ -8,7 +8,6 @@ import {
   MenuList,
   MenuItem,
   MenuDivider,
-  useDisclosure,
   useColorModeValue,
   Stack,
   useColorMode,
@@ -20,11 +19,14 @@ import {
 import { Sun, Moon } from "lucide-react";
 import { Link as RouterLink } from "react-router-dom";
 import logo from "../assets/remix-logo.svg";
+import CookieServices from "../services/CookieServices";
+import { useDispatch } from "react-redux";
+import { toggleDrawer } from "../app/features/globalSlice";
 
 interface Props {
   children: React.ReactNode;
 }
-const Links = ["Dashboard", "products", "Team"];
+const Links = ["Home", "products"];
 
 const NavLink = (props: Props) => {
   const { children } = props;
@@ -49,8 +51,16 @@ const NavLink = (props: Props) => {
 };
 
 export default function Navbar() {
+  // state or hooks
   const { colorMode, toggleColorMode } = useColorMode();
-  // const { isOpen, onOpen, onClose } = useDisclosure();
+  const isAuthenticated = CookieServices.get("userData");
+  const dispatch = useDispatch();
+
+  // handler
+  const handleLogOut = () => {
+    CookieServices.remove("userData");
+    window.location.reload();
+  };
   return (
     <>
       <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>
@@ -68,41 +78,48 @@ export default function Navbar() {
               <Button onClick={toggleColorMode}>
                 {colorMode === "light" ? <Sun /> : <Moon />}
               </Button>
+              <Button onClick={() => dispatch(toggleDrawer())}>
+                cart <span>(0)</span>
+              </Button>
 
-              <NavLink>Login</NavLink>
-
-              <Menu>
-                <MenuButton
-                  as={Button}
-                  rounded={"full"}
-                  variant={"link"}
-                  cursor={"pointer"}
-                  minW={0}
-                >
-                  <Avatar
-                    size={"sm"}
-                    src={"https://avatars.dicebear.com/api/male/username.svg"}
-                  />
-                </MenuButton>
-                <MenuList alignItems={"center"}>
-                  <br />
-                  <Center>
+              {isAuthenticated ? (
+                <Menu>
+                  <MenuButton
+                    as={Button}
+                    rounded={"full"}
+                    variant={"link"}
+                    cursor={"pointer"}
+                    minW={0}
+                  >
                     <Avatar
-                      size={"2xl"}
+                      size={"sm"}
                       src={"https://avatars.dicebear.com/api/male/username.svg"}
                     />
-                  </Center>
-                  <br />
-                  <Center>
-                    <p>Username</p>
-                  </Center>
-                  <br />
-                  <MenuDivider />
-                  <MenuItem>Your Servers</MenuItem>
-                  <MenuItem>Account Settings</MenuItem>
-                  <MenuItem>Logout</MenuItem>
-                </MenuList>
-              </Menu>
+                  </MenuButton>
+                  <MenuList alignItems={"center"}>
+                    <br />
+                    <Center>
+                      <Avatar
+                        size={"2xl"}
+                        src={
+                          "https://avatars.dicebear.com/api/male/username.svg"
+                        }
+                      />
+                    </Center>
+                    <br />
+                    <Center>
+                      <p>Username</p>
+                    </Center>
+                    <br />
+                    <MenuDivider />
+                    <MenuItem>Your Servers</MenuItem>
+                    <MenuItem>Account Settings</MenuItem>
+                    <MenuItem onClick={handleLogOut}>Logout</MenuItem>
+                  </MenuList>
+                </Menu>
+              ) : (
+                <NavLink>Login</NavLink>
+              )}
             </Stack>
           </Flex>
         </Flex>

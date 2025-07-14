@@ -33,12 +33,7 @@ export default function LoginPage() {
   });
   const dispatch = useDispatch<AppDispatch>();
   const toast = useToast();
-  const { loading, data, error } = useSelector(
-    (state: RootState) => state.login
-  );
-
-  console.log(data);
-  console.log(error);
+  const { loading } = useSelector((state: RootState) => state.login);
 
   // handler
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
